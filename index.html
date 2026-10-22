@@ -20,6 +20,7 @@ a{color:#F4F1EA}a:hover{color:#FFFFFF}
 <style>html{scroll-behavior:smooth}</style>
 </head>
 <body>
+<script>document.body.classList.add("qm")</script>
 <div style="background: #0A0A0A; color: #F4F1EA; font-family: 'Space Grotesk', system-ui, sans-serif; overflow-x: hidden">
 
 <header style="border-bottom: 1px solid #262626">
@@ -81,13 +82,19 @@ a{color:#F4F1EA}a:hover{color:#FFFFFF}
 .qz-ghost{all:unset;box-sizing:border-box;cursor:pointer;border:2px solid var(--fg);color:var(--fg);font-weight:700;font-size:18px;padding:16px 26px;min-height:44px;display:inline-flex;align-items:center;text-decoration:none}
 a.qz-btn,a.qz-ghost{text-decoration:none}
 #quiz [hidden]{display:none!important}
+body.qm header,body.qm #quiz~*{display:none!important}
+body.qm #quiz{min-height:100vh;min-height:100svh;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;padding-top:32px;padding-bottom:40px}
+.qz-brand{font-family:'Anton',sans-serif;font-size:24px;letter-spacing:.02em;line-height:1;text-transform:none}
+.qz-brand span{color:var(--a)}
+.qz-intro{color:#D9D6CE;font-size:clamp(17px,1.6vw,21px);line-height:1.45;margin:22px 0 0;max-width:720px;font-family:'Space Grotesk',system-ui,sans-serif;text-transform:none;letter-spacing:0}
 </style>
 
 <section id="quiz" class="qz" aria-label="D2C Reset diagnosis quiz">
 <div class="qz-top">
-<span><span class="qz-tag">60-second diagnosis</span></span>
-<a class="qz-skip" href="#hero">Skip the quiz →</a>
+<span style="display:flex;flex-wrap:wrap;gap:14px;align-items:center"><span class="qz-brand">D2C<span>/</span>RESET</span><span class="qz-tag">60-second diagnosis</span></span>
+<a class="qz-skip" id="qzSkip" href="#hero">Skip the quiz →</a>
 </div>
+<p class="qz-intro" id="qzIntro">Is your D2C brand stuck? Answer 5 quick questions and we&#39;ll tell you exactly what&#39;s broken, and exactly how we&#39;d fix it.</p>
 <div class="qz-bar" aria-hidden="true"><i id="qzBar"></i></div>
 
 <div class="qz-step on" data-q="role" data-type="single">
@@ -199,7 +206,7 @@ function cur(){return steps[i];}
 function sel(){var s=cur(),v=ans[s.dataset.q];return s.dataset.type==='multi'?(v&&v.length):!!v;}
 function paint(){
 steps.forEach(function(s,k){s.classList.toggle('on',k===i);});
-back.hidden=i===0; next.disabled=!sel();
+back.hidden=i===0; next.disabled=!sel(); document.getElementById('qzIntro').hidden=i>0;
 next.firstChild.nodeValue=i===steps.length-1?'Show my diagnosis ':'Next ';
 bar.style.width=(i/steps.length*100)+'%';
 }
@@ -231,11 +238,14 @@ back.addEventListener('click',function(){if(i>0){i--;paint();focusQ();}});
 document.getElementById('qzRedo').addEventListener('click',function(){
 ans={};i=0;
 document.querySelectorAll('#quiz .qz-opt').forEach(function(o){o.setAttribute('aria-pressed','false');});
-res.classList.remove('on');nav.hidden=false;paint();
+res.classList.remove('on');nav.hidden=false;document.body.classList.add('qm');window.scrollTo(0,0);paint();
 document.getElementById('quiz').scrollIntoView({behavior:'smooth'});
 });
 function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+function exitQM(){document.body.classList.remove('qm');}
+document.getElementById('qzSkip').addEventListener('click',function(e){e.preventDefault();exitQM();document.getElementById('hero').scrollIntoView();});
 function show(){
+exitQM();
 steps.forEach(function(s){s.classList.remove('on');});
 nav.hidden=true; bar.style.width='100%'; res.classList.add('on');
 var H=document.getElementById('qzResH'),L=document.getElementById('qzLede'),F=document.getElementById('qzFixes'),
